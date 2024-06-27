@@ -1,10 +1,8 @@
 import pandas as pd
 import sys
 
-print(sys.argv)
-
-day = sys.argv[1]
-
-    #pipeline code
+def main():
+    pass
     
-print(f'job finished successfully for day = {day}')
+if __name__ == "__main__":
+    main()
