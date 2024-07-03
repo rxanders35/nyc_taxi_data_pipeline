@@ -2,3 +2,7 @@ env/
 *.ipynb
 ~/.config/psycopg2
 ~/.pgcli/*
+~/.postgres-data/*
+postgres-data
+commands.txt
+yellow_taxi_2024_01
