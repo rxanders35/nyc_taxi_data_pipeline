@@ -2,10 +2,8 @@ import argparse
 import os
 from typing import Any, Optional
 import pandas as pd
-import pyarrow.parquet as pq
+import pyarrow
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 
 def read_data(file_path: str) -> Optional[pd.DataFrame]:
     if file_path.endswith('.csv').lower():
@@ -20,7 +18,7 @@ def transform_columns(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[:, 'tpep_dropoff_datetime'] = pd.to_datetime(df['tpep_dropoff_datetime'])
     return df
 
-def load_to_sql(file_path: str, user: str, password: str, host: str, 
+def load_chunk_to_sql(file_path: str, user: str, password: str, host: str, 
                 port: str, db: str, table_name: str) -> None:
     
     df = read_data(file_path)
@@ -54,7 +52,7 @@ def main(parameters: argparse.Namespace) -> None:
     df = read_data(file_path)
     df = transform_columns(df)
     
-    load_to_sql(
+    load_chunk_to_sql(
         df = df,
         file_path = parameters.file_path,
         user = parameters.user,
@@ -64,7 +62,6 @@ def main(parameters: argparse.Namespace) -> None:
         db = parameters.db,
         table_name = parameters.table_name
     )
-
 
 if __name__=="__main__":
     main()
