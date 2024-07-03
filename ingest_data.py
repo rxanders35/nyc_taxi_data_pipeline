@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 
 def read_data(file_path: str) -> Optional[pd.DataFrame]:
     if file_path.endswith('.csv').lower():
-        df =  pd.read_csv(file_path, engine='pyarrow')
+        df =  pd.read_csv(file_path)
     elif file_path.endswith('.parquet').lower():
         df = pd.read_parquet(file_path, engine="pyarrow")
     else:
