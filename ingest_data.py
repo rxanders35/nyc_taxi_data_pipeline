@@ -8,9 +8,9 @@ from sqlalchemy.orm import sessionmaker
 
 
 def read_data(file_path: str) -> Optional[pd.DataFrame]:
-    if file_path.endswith('csv').lower():
+    if file_path.endswith('.csv').lower():
         df =  pd.read_csv(file_path, engine='pyarrow')
-    elif file_path.endswith('parquet').lower():
+    elif file_path.endswith('.parquet').lower():
         df = pd.read_parquet(file_path, engine="pyarrow")
     else:
         return ValueError("Invalid file type. Please use .parquet or .csv only.")
@@ -34,21 +34,7 @@ def load_to_sql(file_path: str, user: str, password: str, host: str,
     chunk.head(n=0).to_sql(name=table_name, con=engine, if_exist="replace")
     chunk.to_sql(name=table_name, con=engine, if_exists="append")
 
-def main(parameters: argparse.Namespace) -> None:
-    load_to_sql(
-        file_path=parameters.file_path,
-        user=parameters.user,
-        password=parameters.password,
-        host=parameters.host,
-        port=parameters.port,
-        db=parameters.db,
-        table_name=parameters.table_name
-    )
-    
-    
-
-
-if __name__=="__main__":
+def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Ingest .csv data to Postgres')
 
     parser.add_argument('user', help='username for postgres')
@@ -60,7 +46,25 @@ if __name__=="__main__":
     parser.add_argument('url', help='url of csv')
     parser.add_argument('file_type', help='file type being inputted')
     parser.add_argument('file_path', help='path to the file being inputted(parquet or csv)')
+    return parser.parse_args()
 
-    args = parser.parse_args()
+def main(parameters: argparse.Namespace) -> None:
+    args = parse_arguments()
+    file_path = args.file_path
+    df = read_data(file_path)
+    df = transform_columns(df)
+    
+    load_to_sql(
+        df = df,
+        file_path = parameters.file_path,
+        user = parameters.user,
+        password = parameters.password,
+        host = parameters.host,
+        port = parameters.port,
+        db = parameters.db,
+        table_name = parameters.table_name
+    )
 
-    main(args)
+
+if __name__=="__main__":
+    main()
